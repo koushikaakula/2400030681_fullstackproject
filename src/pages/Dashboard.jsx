@@ -1,5 +1,6 @@
 import { Grid, Paper } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom"; // ✅ Added
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import PeopleIcon from "@mui/icons-material/People";
 import InventoryIcon from "@mui/icons-material/Inventory";
@@ -107,9 +108,20 @@ export default function Dashboard() {
   );
 }
 
+// ✅ Modified ONLY this function
 function ActionCard({ title, icon }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (title === "Browse Donations") navigate("/browse");
+    if (title === "Donate Now") navigate("/donate");
+    if (title === "Request Help") navigate("/request");
+    if (title === "Profile") navigate("/profile");
+  };
+
   return (
     <div
+      onClick={handleClick}
       style={{
         padding: "20px 30px",
         borderRadius: "20px",
@@ -117,6 +129,7 @@ function ActionCard({ title, icon }) {
         color: "white",
         fontWeight: 500,
         boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+        cursor: "pointer", // ✅ Added
       }}
     >
       <span style={{ marginRight: 8 }}>{icon}</span>
