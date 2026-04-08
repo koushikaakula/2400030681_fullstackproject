@@ -19,9 +19,47 @@ export default function Donate() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  // ✅ FIXED SUBMIT FUNCTION
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Donation Submitted!");
+
+    try {
+      const response = await fetch("http://localhost:8081/api/donations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemName: form.title,
+          quantity: Number(form.quantity), // ✅ FIXED (important)
+          location: form.location,
+        }),
+      });
+
+      // ✅ CHECK RESPONSE
+      if (!response.ok) {
+        throw new Error("Server error");
+      }
+
+      const data = await response.json();
+      console.log("Saved:", data);
+
+      alert("Donation Submitted Successfully ✅");
+
+      // reset form
+      setForm({
+        title: "",
+        description: "",
+        category: "",
+        quantity: "",
+        condition: "",
+        location: "",
+      });
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to connect backend ❌");
+    }
   };
 
   return (
@@ -34,9 +72,10 @@ export default function Donate() {
             fullWidth
             label="Item Title *"
             name="title"
-            placeholder="e.g., Winter Coats, Canned Food, Backpacks"
+            value={form.title}
             margin="normal"
             onChange={handleChange}
+            required
           />
 
           <TextField
@@ -45,9 +84,10 @@ export default function Donate() {
             rows={4}
             label="Description *"
             name="description"
-            placeholder="Describe the items in detail..."
+            value={form.description}
             margin="normal"
             onChange={handleChange}
+            required
           />
 
           <Grid container spacing={3} sx={{ mt: 1 }}>
@@ -59,6 +99,7 @@ export default function Donate() {
                 name="category"
                 value={form.category}
                 onChange={handleChange}
+                required
               >
                 <MenuItem value="Clothes">Clothes</MenuItem>
                 <MenuItem value="Food">Food</MenuItem>
@@ -73,7 +114,9 @@ export default function Donate() {
                 label="Quantity *"
                 name="quantity"
                 type="number"
+                value={form.quantity}
                 onChange={handleChange}
+                required
               />
             </Grid>
           </Grid>
@@ -83,8 +126,10 @@ export default function Donate() {
             fullWidth
             label="Condition *"
             name="condition"
+            value={form.condition}
             margin="normal"
             onChange={handleChange}
+            required
           >
             <MenuItem value="New">New</MenuItem>
             <MenuItem value="Used - Good">Used - Good</MenuItem>
@@ -95,9 +140,10 @@ export default function Donate() {
             fullWidth
             label="Location *"
             name="location"
-            placeholder="City, State"
+            value={form.location}
             margin="normal"
             onChange={handleChange}
+            required
           />
 
           <Button

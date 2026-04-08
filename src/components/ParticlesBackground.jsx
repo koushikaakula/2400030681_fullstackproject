@@ -1,30 +1,27 @@
+import { useEffect, useState } from "react";
 import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
+import { loadSlim } from "tsparticles-slim";
 
 export default function ParticlesBackground() {
-  const particlesInit = async (main) => {
-    await loadFull(main);
-  };
+  const [init, setInit] = useState(false);
 
-  return (
+  useEffect(() => {
+    const initParticles = async (engine) => {
+      await loadSlim(engine);
+    };
+    setInit(true);
+  }, []);
+
+  return init ? (
     <Particles
-      init={particlesInit}
       options={{
-        fullScreen: { enable: true, zIndex: -1 },
+        background: { color: "#ffffff" },
         particles: {
-          number: { value: 60 },
+          number: { value: 40 },
           size: { value: 3 },
-          move: { enable: true, speed: 1 },
-          opacity: { value: 0.3 },
-          links: {
-            enable: true,
-            distance: 150,
-            color: "#ffffff",
-            opacity: 0.2,
-          },
+          move: { enable: true },
         },
-        background: { color: "transparent" },
       }}
     />
-  );
+  ) : null;
 }

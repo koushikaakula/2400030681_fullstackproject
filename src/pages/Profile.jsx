@@ -1,10 +1,12 @@
 import { Paper, Button, Avatar, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next"; // ✅ ADD THIS
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation(); // ✅ ADD THIS
 
   if (!user) return null;
 
@@ -18,39 +20,39 @@ export default function Profile() {
           </Avatar>
 
           <div>
-            <h2 style={{ margin: 0 }}>Profile</h2>
+            <h2 style={{ margin: 0 }}>{t("profile")}</h2> {/* ✅ CHANGED */}
             <p style={{ margin: 0, color: "gray" }}>
-              Active HopeHive Member
-            </p>
+              {t("activeMember")}
+            </p> {/* ✅ CHANGED */}
           </div>
         </div>
 
         <hr style={{ margin: "30px 0" }} />
 
         {/* USER INFO */}
-        <p><strong>Name:</strong> {user?.email?.split("@")[0]}</p>
-        <p><strong>Email:</strong> {user?.email}</p>
+        <p><strong>{t("name")}:</strong> {user?.email?.split("@")[0]}</p> {/* ✅ */}
+        <p><strong>{t("email")}:</strong> {user?.email}</p> {/* ✅ */}
 
         {/* SMALL STATS */}
         <Grid container spacing={3} sx={{ mt: 3 }}>
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 3, textAlign: "center", borderRadius: 3 }}>
               <h3>12</h3>
-              <p>Donations Made</p>
+              <p>{t("donationsMade")}</p> {/* ✅ */}
             </Paper>
           </Grid>
 
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 3, textAlign: "center", borderRadius: 3 }}>
               <h3>5</h3>
-              <p>Requests Posted</p>
+              <p>{t("requestsPosted")}</p> {/* ✅ */}
             </Paper>
           </Grid>
 
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 3, textAlign: "center", borderRadius: 3 }}>
-              <h3>Gold</h3>
-              <p>Member Level</p>
+              <h3>{t("gold")}</h3> {/* ✅ */}
+              <p>{t("memberLevel")}</p> {/* ✅ */}
             </Paper>
           </Grid>
         </Grid>
@@ -61,14 +63,14 @@ export default function Profile() {
             variant="contained"
             onClick={() => navigate("/")}
           >
-            Go to Home
+            {t("goHome")} {/* ✅ */}
           </Button>
 
           <Button
             variant="outlined"
             onClick={() => navigate("/dashboard")}
           >
-            Go to Dashboard
+            {t("goDashboard")} {/* ✅ */}
           </Button>
 
           <Button
@@ -79,7 +81,7 @@ export default function Profile() {
               navigate("/login");
             }}
           >
-            Logout
+            {t("logout")} {/* ✅ */}
           </Button>
         </div>
       </Paper>

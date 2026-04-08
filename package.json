@@ -16,12 +16,15 @@
     "@mui/material": "^7.3.8",
     "dom": "^0.0.3",
     "framer-motion": "^12.34.3",
+    "i18next": "^25.10.10",
     "react": "^19.2.4",
     "react-dom": "^19.2.0",
+    "react-i18next": "^16.6.6",
     "react-router-dom": "^7.13.0",
     "react-tsparticles": "^2.12.2",
     "router": "^2.2.0",
-    "tsparticles": "^3.9.1"
+    "tsparticles": "^3.9.1",
+    "tsparticles-slim": "^2.12.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -1,89 +1,149 @@
 import { useState } from "react";
+import { TextField, Button, Paper, Alert } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import {
-  Avatar, Button, TextField, Grid,
-  Box, Typography, Paper, Alert
-} from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { useAuth } from "../context/AuthContext"; // ✅ IMPORTANT
 
 export default function Signup() {
-  const { signup } = useAuth();
   const navigate = useNavigate();
+  const { signup } = useAuth(); // ✅ USE CONTEXT
 
-  const [name,setName]=useState("");
-  const [email,setEmail]=useState("");
-  const [password,setPassword]=useState("");
-  const [error,setError]=useState("");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const handleSubmit=(e)=>{
+  const [strength, setStrength] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm({ ...form, [name]: value });
+
+    // 🔥 Password strength checker
+    if (name === "password") {
+      if (value.length < 6) setStrength("Weak");
+      else if (/[A-Z]/.test(value) && /[0-9]/.test(value))
+        setStrength("Strong");
+      else setStrength("Medium");
+    }
+  };
+
+  // ✅ FIXED SUBMIT
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setError("");
 
-    if(!name || !email || !password){
-      setError("All fields required");
+    if (!form.name || !form.email || !form.password) {
+      setError("All fields are required ❌");
       return;
     }
 
-    if(password.length < 6){
-      setError("Password must be at least 6 characters");
+    // ❌ Password mismatch
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match ❌");
       return;
     }
 
-    const result = signup(name,email,password);
+    // ❌ Weak password
+    if (strength === "Weak") {
+      alert("Password too weak ❌");
+      return;
+    }
 
-    if(!result.success){
-      setError(result.message);
+    // ✅ CALL AUTH CONTEXT
+    const result = signup(form.name, form.email, form.password);
+
+    if (result.success) {
+      alert("Account Created ✅");
+      navigate("/login");
     } else {
-      navigate("/dashboard");
+      setError(result.message);
     }
   };
 
   return (
-    <Grid container component="main" sx={{ height:"100vh" }}>
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6}>
-        <Box sx={{ my:8,mx:4 }}>
-          <Avatar sx={{ bgcolor:"#EC4899" }}>
-            <PersonAddIcon/>
-          </Avatar>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        padding: "60px",
+      }}
+    >
+      <Paper sx={{ p: 5, width: "100%", maxWidth: 500, borderRadius: 4 }}>
+        <h2>Sign Up</h2>
 
-          <Typography variant="h5">Sign Up</Typography>
+        {error && <Alert severity="error">{error}</Alert>}
 
-          {error && <Alert severity="error">{error}</Alert>}
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="Full Name"
+            name="name"
+            margin="normal"
+            onChange={handleChange}
+          />
 
-          <Box component="form" onSubmit={handleSubmit}>
-            <TextField fullWidth label="Full Name" margin="normal"
-              onChange={(e)=>setName(e.target.value)}
-            />
-            <TextField fullWidth label="Email" margin="normal"
-              onChange={(e)=>setEmail(e.target.value)}
-            />
-            <TextField fullWidth label="Password" type="password" margin="normal"
-              onChange={(e)=>setPassword(e.target.value)}
-            />
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            margin="normal"
+            onChange={handleChange}
+          />
 
-            <Button fullWidth type="submit"
-              sx={{
-                mt:2,
-                background:"linear-gradient(90deg,#9333EA,#EC4899)",
-                color:"white"
+          <TextField
+            fullWidth
+            label="Password"
+            name="password"
+            type="password"
+            margin="normal"
+            onChange={handleChange}
+          />
+
+          {/* 🔥 PASSWORD STRENGTH */}
+          {form.password && (
+            <p
+              style={{
+                color:
+                  strength === "Strong"
+                    ? "green"
+                    : strength === "Medium"
+                    ? "orange"
+                    : "red",
+                margin: "5px 0",
               }}
             >
-              Create Account
-            </Button>
+              Strength: {strength}
+            </p>
+          )}
 
-            <Typography sx={{ mt:2 }}>
-              Already have account? <Link to="/login">Sign In</Link>
-            </Typography>
-          </Box>
-        </Box>
-      </Grid>
+          {/* 🔥 CONFIRM PASSWORD */}
+          <TextField
+            fullWidth
+            label="Re-enter Password"
+            name="confirmPassword"
+            type="password"
+            margin="normal"
+            onChange={handleChange}
+          />
 
-      <Grid
-        item xs={false} sm={4} md={7}
-        sx={{
-          background:"linear-gradient(90deg,#4F46E5,#9333EA,#EC4899)"
-        }}
-      />
-    </Grid>
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            sx={{ mt: 2 }}
+          >
+            CREATE ACCOUNT
+          </Button>
+        </form>
+
+        <p style={{ marginTop: 20 }}>
+          Already have account? <Link to="/login">Sign In</Link>
+        </p>
+      </Paper>
+    </div>
   );
 }
